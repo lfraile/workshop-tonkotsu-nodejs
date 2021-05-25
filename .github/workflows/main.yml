@@ -6,6 +6,9 @@ on:
       - master
   pull_request:
 
+env:
+  DOCKER_IMAGE: docker.pkg.github.com/${{ github.repository }}/node-image:${{ github.sha }}
+
 jobs:
   docker:
     name: 'Docker'
@@ -27,8 +30,9 @@ jobs:
         with:
           push: true
           tags: |
-            docker.pkg.github.com/${{ github.repository }}/node-image:${{ github.sha }}
+            ${{ github.DOCKER_IMAGE }}
   terraform:
+    needs: docker
     name: 'Terraform'
     runs-on: ubuntu-latest
     env:
@@ -64,7 +68,7 @@ jobs:
         name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color
+        run: terraform plan -var 'docker_image=${{ github.DOCKER_IMAGE }}' -no-color
         continue-on-error: true
       - 
         name: Update Pull Request
@@ -96,4 +100,4 @@ jobs:
       - 
         name: Terraform Apply
         if: github.ref == 'refs/head/master' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform apply -var 'docker_image=${{ github.DOCKER_IMAGE }}' -auto-approve
