@@ -14,7 +14,11 @@ terraform {
     }
 }
 
-provider "azurerm" {}
+provider "azurerm" {
+    features {
+      
+    }
+}
 
 resource "random_string" "prefix" {
   length  = 10
