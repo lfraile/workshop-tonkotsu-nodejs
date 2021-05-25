@@ -30,7 +30,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ github.DOCKER_IMAGE }}
+            ${{ env.DOCKER_IMAGE }}
   terraform:
     needs: docker
     name: 'Terraform'
@@ -68,7 +68,7 @@ jobs:
         name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -var 'docker_image=${{ github.DOCKER_IMAGE }}' -no-color
+        run: terraform plan -var 'docker_image=${{ env.DOCKER_IMAGE }}' -no-color
         continue-on-error: true
       - 
         name: Update Pull Request
@@ -100,4 +100,4 @@ jobs:
       - 
         name: Terraform Apply
         if: github.ref == 'refs/head/master' && github.event_name == 'push'
-        run: terraform apply -var 'docker_image=${{ github.DOCKER_IMAGE }}' -auto-approve
+        run: terraform apply -var 'docker_image=${{ env.DOCKER_IMAGE }}' -auto-approve
